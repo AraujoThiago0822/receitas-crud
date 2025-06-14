@@ -1,59 +1,28 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
 
 type Props = {
-  nome: string;
-  ingredientes: string;
-  modoPreparo: string;
+  receita: any;
+  onEdit: () => void;
   onDelete: () => void;
 };
 
-export default function RecipeCard({ nome, ingredientes, modoPreparo, onDelete }: Props) {
+export default function RecipeCard({ receita, onEdit, onDelete }: Props) {
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>{nome}</Text>
-      <Text style={styles.label}>Ingredientes:</Text>
-      <Text>{ingredientes}</Text>
-      <Text style={styles.label}>Modo de Preparo:</Text>
-      <Text>{modoPreparo}</Text>
-      <TouchableOpacity onPress={onDelete} style={styles.button}>
-        <Text style={styles.buttonText}>Excluir</Text>
-      </TouchableOpacity>
+      <Text style={styles.titulo}>{receita.titulo}</Text>
+      <Text>Ingredientes: {receita.ingredientes}</Text>
+      <Text>Preparo: {receita.preparo}</Text>
+      <View style={styles.actions}>
+        <Button title="Editar" onPress={onEdit} />
+        <Button title="Excluir" onPress={onDelete} color="red" />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#FFF',
-    padding: 15,
-    borderRadius: 10,
-    marginVertical: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#4CAF50',
-    marginBottom: 5,
-  },
-  label: {
-    fontWeight: 'bold',
-    marginTop: 5,
-  },
-  button: {
-    marginTop: 10,
-    backgroundColor: '#FF5252',
-    padding: 8,
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: '#FFF',
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
+  card: { padding: 12, margin: 8, backgroundColor: '#eee', borderRadius: 8 },
+  titulo: { fontWeight: 'bold', fontSize: 16 },
+  actions: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }
 });

@@ -1,66 +1,84 @@
-import db from './Database';
+import { getDatabase } from './DatabaseSetup';
 
-export const addRecipe = (nome: string, ingredientes: string, modoPreparo: string) => {
-  return new Promise((resolve, reject) => {
-    db.transaction(tx => {
-      tx.executeSql(
-        'INSERT INTO receitas (nome, ingredientes, modoPreparo) VALUES (?, ?, ?);',
-        [nome, ingredientes, modoPreparo],
-        (_, result) => resolve(result),
-        (_, error) => reject(error)
+const db = getDatabase();
+
+// Adicionar receita
+export function addReceita(
+  titulo: string,
+  ingredientes: string,
+  preparo: string,
+  callback: (ok: boolean) => void
+) {
+  try {
+    db.withTransactionSync(() => {
+      db.runSync(
+        'INSERT INTO receitas (titulo, ingredientes, preparo) VALUES (?, ?, ?);',
+        [titulo, ingredientes, preparo]
       );
     });
-  });
-};
+    callback(true);
+  } catch (error) {
+    console.log('Erro ao adicionar receita:', error);
+    callback(false);
+  }
+}
 
-export const updateRecipe = (id: number, nome: string, ingredientes: string, modoPreparo: string) => {
-  return new Promise((resolve, reject) => {
-    db.transaction(tx => {
-      tx.executeSql(
-        'UPDATE receitas SET nome = ?, ingredientes = ?, modoPreparo = ? WHERE id = ?;',
-        [nome, ingredientes, modoPreparo, id],
-        (_, result) => resolve(result),
-        (_, error) => reject(error)
+// Atualizar receita
+export function updateReceita(
+  id: number,
+  titulo: string,
+  ingredientes: string,
+  preparo: string,
+  callback: (ok: boolean) => void
+) {
+  try {
+    db.withTransactionSync(() => {
+      db.runSync(
+        'UPDATE receitas SET titulo=?, ingredientes=?, preparo=? WHERE id=?;',
+        [titulo, ingredientes, preparo, id]
       );
     });
-  });
-};
+    callback(true);
+  } catch (error) {
+    console.log('Erro ao atualizar receita:', error);
+    callback(false);
+  }
+}
 
-export const deleteRecipe = (id: number) => {
-  return new Promise((resolve, reject) => {
-    db.transaction(tx => {
-      tx.executeSql(
-        'DELETE FROM receitas WHERE id = ?;',
-        [id],
-        (_, result) => resolve(result),
-        (_, error) => reject(error)
-      );
+// Excluir receita
+export function deleteReceita(id: number, callback: (ok: boolean) => void) {
+  try {
+    db.withTransactionSync(() => {
+      db.runSync('DELETE FROM receitas WHERE id=?;', [id]);
     });
-  });
-};
+    callback(true);
+  } catch (error) {
+    console.log('Erro ao excluir receita:', error);
+    callback(false);
+  }
+}
 
-export const getAllRecipes = () => {
-  return new Promise((resolve, reject) => {
-    db.transaction(tx => {
-      tx.executeSql(
-        'SELECT * FROM receitas;',
-        [],
-        (_, { rows }) => resolve(rows._array),
-        (_, error) => reject(error)
-      );
-    });
-  });
-};
+// Listar todas as receitas
+export function getReceitas(callback: (data: any[]) => void) {
+  try {
+    const result = db.getAllSync('SELECT * FROM receitas;');
+    callback(result);
+  } catch (error) {
+    console.log('Erro ao buscar receitas:', error);
+    callback([]);
+  }
+}
 
-export const searchRecipe = (nome: string) => {
-  return new Promise((resolve, reject) => {
-    db.transaction(tx => {
-      tx.executeSql(
-        'SELECT * FROM receitas WHERE nome LIKE ?;',
-        [`%${nome}%`],
-        (_, { rows }) => resolve(rows._array),
-        (_, error) => reject(error)
-      );
-    });
-  });
-};
+// Buscar receitas pelo título
+export function searchReceitas(query: string, callback: (data: any[]) => void) {
+  try {
+    const result = db.getAllSync(
+      'SELECT * FROM receitas WHERE titulo LIKE ?;',
+      [`%${query}%`]
+    );
+    callback(result);
+  } catch (error) {
+    console.error('Erro ao buscar receitas:', error);
+    callback([]);
+  }
+}

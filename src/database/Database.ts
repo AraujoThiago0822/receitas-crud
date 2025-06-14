@@ -1,5 +1,5 @@
 import * as SQLite from 'expo-sqlite';
 
-const db = SQLite.openDatabase('receitas.db');
+const db = SQLite.openDatabaseSync('receitas.db');
 
 export default db;
